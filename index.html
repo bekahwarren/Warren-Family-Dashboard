@@ -1,0 +1,1660 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7f6f2" />
+  <title>Warren Family Dashboard</title>
+  <style>
+
+    [hidden]{display:none !important;}
+
+    :root{
+      --bg:#f7f6f2;
+      --panel:#ffffff;
+      --text:#243238;
+      --muted:#6f7b80;
+      --border:#e7e7e2;
+      --accent:#4d7c6f;
+      --accent-2:#dcebe5;
+      --warm:#f5e7c8;
+      --rose:#f4dfe2;
+      --blue:#dfeaf5;
+      --lav:#e9e2f3;
+      --danger:#b85252;
+      --shadow:0 10px 30px rgba(35,50,56,.07);
+      --radius:22px;
+    }
+
+    body.dark-mode{
+      --bg:#171b1d;
+      --panel:#22282b;
+      --text:#edf2f0;
+      --muted:#a8b3b0;
+      --border:#343c3f;
+      --accent:#76a997;
+      --accent-2:#29443b;
+      --warm:#4b4028;
+      --rose:#4a3037;
+      --blue:#293d4d;
+      --lav:#3a3249;
+      --danger:#e27b7b;
+      --shadow:0 10px 30px rgba(0,0,0,.18);
+    }
+    body.dark-mode aside{background:rgba(30,35,38,.92)}
+    body.dark-mode .task,
+    body.dark-mode .bill,
+    body.dark-mode .reminder,
+    body.dark-mode .day,
+    body.dark-mode .family-card{background:#1c2123;border-color:var(--border)}
+    body.dark-mode .leave-box,
+    body.dark-mode .mini-event,
+    body.dark-mode input,
+    body.dark-mode select{background:#1b2022;color:var(--text);border-color:var(--border)}
+    body.dark-mode .next-up{
+      background:linear-gradient(135deg,#20332d,#22282b);
+      border-color:#355348;
+    }
+    body.dark-mode .timeline-row,
+    body.dark-mode .setting-row{border-color:#31383b}
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+
+    .app{
+      display:grid;
+      grid-template-columns:240px minmax(0,1fr);
+      min-height:100vh;
+    }
+
+    aside{
+      border-right:1px solid var(--border);
+      padding:24px 18px;
+      background:rgba(255,255,255,.72);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:28px;
+    }
+
+    .brand-mark{
+      width:46px;height:46px;border-radius:16px;
+      display:grid;place-items:center;
+      background:var(--accent-2);
+      font-size:23px;
+    }
+
+    .brand strong{display:block;font-size:18px}
+    .brand span{font-size:12px;color:var(--muted)}
+
+    nav{display:grid;gap:8px}
+    nav button{
+      border:0;
+      background:transparent;
+      color:var(--text);
+      text-align:left;
+      padding:12px 14px;
+      border-radius:14px;
+    }
+    nav button.active, nav button:hover{background:var(--accent-2);color:#315d52}
+
+    .aside-note{
+      margin-top:28px;
+      padding:16px;
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:18px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    main{padding:30px;min-width:0}
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      align-items:flex-start;
+      margin-bottom:22px;
+    }
+    h1{margin:0;font-size:clamp(28px,4vw,42px);letter-spacing:-.03em}
+    .subtitle{color:var(--muted);margin-top:4px}
+
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      border:1px solid var(--border);
+      background:var(--panel);
+      color:var(--text);
+      border-radius:14px;
+      min-height:44px;
+      padding:10px 14px;
+      box-shadow:0 4px 14px rgba(35,50,56,.04);
+    }
+    .btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
+    .btn.ghost{box-shadow:none}
+    .btn:focus-visible,input:focus-visible,select:focus-visible{
+      outline:3px solid rgba(77,124,111,.25);
+      outline-offset:2px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.65fr) minmax(300px,.9fr);
+      gap:18px;
+      align-items:start;
+    }
+    .stack{display:grid;gap:18px}
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:20px;
+      box-shadow:var(--shadow);
+      min-width:0;
+    }
+
+    .card h2{margin:0 0 14px;font-size:18px}
+    .section-head{
+      display:flex;justify-content:space-between;gap:12px;align-items:center;
+      margin-bottom:14px;
+    }
+
+    .next-up{
+      background:linear-gradient(135deg,#eef6f2,#f8fbfa);
+      border-color:#d9e9e2;
+    }
+
+    .next-grid{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:16px;
+      align-items:center;
+    }
+    .next-title{font-size:24px;font-weight:750;margin:4px 0}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      background:#eef0f1;color:#4d5a60;
+    }
+    .pill.alert{background:#fae6e6;color:#9c3f3f}
+    .pill.warm{background:var(--warm);color:#795f28}
+    .leave-box{
+      background:white;
+      border:1px solid #dfe9e5;
+      padding:14px 16px;
+      border-radius:16px;
+      min-width:170px;
+    }
+    .leave-box strong{display:block;font-size:24px}
+
+    .timeline{display:grid;gap:4px}
+    .timeline-row{
+      display:grid;
+      grid-template-columns:76px 16px minmax(0,1fr);
+      gap:10px;
+      padding:10px 0;
+      align-items:flex-start;
+      border-bottom:1px solid #f0f0ec;
+    }
+    .timeline-row:last-child{border-bottom:0}
+    .time{font-size:13px;color:var(--muted);padding-top:2px}
+    .dot{width:11px;height:11px;border-radius:50%;margin-top:4px;background:var(--accent)}
+    .dot.blue{background:#5a88b8}
+    .dot.rose{background:#cb6d83}
+    .dot.gold{background:#d9a63b}
+    .event-title{font-weight:700}
+    .event-meta{font-size:13px;color:var(--muted);margin-top:3px}
+
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+    }
+    .quick{
+      min-height:84px;
+      border:0;border-radius:18px;
+      padding:14px;
+      text-align:left;
+      color:var(--text);
+    }
+    .quick:nth-child(1){background:var(--accent-2)}
+    .quick:nth-child(2){background:var(--rose)}
+    .quick:nth-child(3){background:var(--lav)}
+    .quick:nth-child(4){background:var(--blue)}
+    .quick strong{display:block;margin-top:14px}
+
+    .task-list,.bill-list,.reminder-list{display:grid;gap:10px}
+    .task,.bill,.reminder{
+      display:flex;justify-content:space-between;gap:12px;align-items:center;
+      padding:12px;
+      background:#fafaf8;
+      border:1px solid #efefea;
+      border-radius:15px;
+    }
+    .task-left{display:flex;gap:10px;align-items:flex-start;min-width:0}
+    .task input{width:20px;height:20px;margin-top:2px}
+    .task.done .task-copy{text-decoration:line-through;color:var(--muted)}
+    .task-copy strong,.bill strong{display:block}
+    .small{font-size:12px;color:var(--muted);margin-top:3px}
+
+    .week{
+      display:grid;
+      grid-template-columns:repeat(7,minmax(105px,1fr));
+      gap:8px;
+      overflow-x:auto;
+      padding-bottom:4px;
+    }
+    .day{
+      background:#fafaf8;
+      border:1px solid #efefea;
+      border-radius:15px;
+      padding:12px;
+      min-height:122px;
+    }
+    .day strong{display:block;margin-bottom:8px}
+    .mini-event{
+      font-size:12px;
+      padding:7px 8px;
+      border-radius:10px;
+      background:#fff;
+      border:1px solid var(--border);
+      margin-top:7px;
+    }
+
+    .low-stim .optional{display:none!important}
+    .low-stim aside{opacity:.55}
+    .low-stim .card{box-shadow:none}
+    .low-stim .next-up{border-width:2px}
+
+    .page{display:none}
+    .page.active{display:block}
+    .page-title{margin:0 0 18px}
+    .page-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
+    }
+    .field-row{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .family-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;
+    }
+    .calendar-shell{margin-top:18px}
+    .calendar-toolbar{
+      display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .calendar-title{font-size:20px;font-weight:800}
+    .calendar-controls{display:flex;gap:8px;flex-wrap:wrap}
+    .month-grid{
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:8px;
+    }
+    .weekday{
+      padding:8px 6px;
+      font-size:12px;
+      font-weight:700;
+      color:var(--muted);
+      text-align:center;
+    }
+    .date-cell{
+      min-height:112px;
+      background:#fafaf8;
+      border:1px solid #efefea;
+      border-radius:15px;
+      padding:8px;
+      overflow:hidden;
+    }
+    .date-cell.outside{opacity:.38}
+    .date-cell.today{border:2px solid var(--accent)}
+    .date-number{
+      width:28px;height:28px;border-radius:50%;
+      display:grid;place-items:center;
+      font-size:12px;font-weight:800;
+      margin-bottom:5px;
+    }
+    .date-cell.today .date-number{background:var(--accent);color:#fff}
+    .cal-event{
+      font-size:11px;
+      line-height:1.2;
+      border-radius:8px;
+      padding:5px 6px;
+      margin-top:5px;
+      background:var(--accent-2);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .cal-event.bill{background:var(--rose)}
+    .cal-event.quiet{background:var(--lav)}
+    body.dark-mode .date-cell{background:#1c2123;border-color:var(--border)}
+    @media (max-width:700px){
+      .month-grid{gap:4px}
+      .date-cell{min-height:82px;padding:5px}
+      .weekday{font-size:10px;padding:5px 2px}
+      .cal-event{font-size:9px;padding:4px}
+    }
+    .family-card{
+      background:#fafaf8;
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:16px;
+      text-align:center;
+    }
+    .avatar{
+      width:54px;height:54px;border-radius:50%;
+      margin:0 auto 10px;
+      display:grid;place-items:center;
+      font-weight:800;
+      background:var(--accent-2);
+    }
+    .settings-list{display:grid;gap:14px}
+    .setting-row{
+      display:flex;justify-content:space-between;gap:12px;align-items:center;
+      padding:14px 0;border-bottom:1px solid #efefea;
+    }
+    .setting-row:last-child{border-bottom:0}
+
+    .budget-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+    .budget-stat{border:1px solid var(--border);border-radius:18px;padding:15px;background:#fafaf8}
+    .budget-stat .label{font-size:12px;color:var(--muted);font-weight:700}
+    .budget-stat .value{font-size:24px;font-weight:800;margin-top:4px}
+    .budget-toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+    .budget-month-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .budget-table-wrap{overflow-x:auto}
+    .budget-table{width:100%;border-collapse:collapse;min-width:860px}
+    .budget-table th,.budget-table td{padding:11px 10px;border-bottom:1px solid #ecece7;text-align:left;vertical-align:middle}
+    .budget-table th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+    .budget-table input{width:100%;min-width:90px;padding:9px 10px}
+    .budget-table .money{text-align:right}
+    .budget-table td.money input{text-align:right}
+    .budget-total-row td{font-weight:800;background:rgba(127,169,151,.08)}
+    .budget-history{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .history-card{border:1px solid var(--border);border-radius:16px;padding:14px;background:#fafaf8}
+    body.dark-mode .budget-stat,body.dark-mode .history-card{background:#1c2123}
+    body.dark-mode .budget-table th,body.dark-mode .budget-table td{border-color:#31383b}
+    .pin-gate{max-width:420px;margin:18px auto 0;text-align:center}
+    .pin-gate input{text-align:center;letter-spacing:.35em;font-size:22px;max-width:180px;margin:12px auto;display:block}
+    .budget-locked-note{font-size:12px;color:var(--muted);margin-top:8px}
+    @media (max-width:980px){.budget-summary{grid-template-columns:1fr 1fr}.budget-history{grid-template-columns:1fr}}
+    @media (max-width:560px){.budget-summary{grid-template-columns:1fr}}
+
+
+    .calendar-source-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0 18px}
+    .source-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid var(--border);border-radius:999px;background:var(--panel);font-size:13px}
+    .source-dot{width:9px;height:9px;border-radius:50%;display:inline-block}.source-dot.family{background:#7fa997}.source-dot.ryan{background:#7f9db8}.source-dot.rebekah{background:#b994a9}.source-dot.kids{background:#c4a46c}.source-dot.school{background:#8fa36d}
+    .sync-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:18px}.connection-row{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--border)}.connection-row:last-child{border-bottom:0}.connection-main{display:flex;gap:11px;align-items:flex-start}.calendar-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--border);background:var(--panel);font-size:18px}.sync-badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800;border:1px solid var(--border)}.sync-badge.pending{background:rgba(196,164,108,.13)}
+    .calendar-manager{width:100%;border-collapse:collapse;margin-top:10px}.calendar-manager th,.calendar-manager td{padding:11px 8px;border-bottom:1px solid var(--border);text-align:left}.calendar-manager th{font-size:12px;color:var(--muted);text-transform:uppercase}.sync-note{padding:13px 14px;border:1px solid var(--border);border-radius:16px;background:rgba(127,169,151,.07);font-size:13px;line-height:1.5}@media(max-width:900px){.sync-layout{grid-template-columns:1fr}}
+
+    .login-screen{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:var(--bg);
+    }
+    .login-card{
+      width:min(460px,100%);
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:26px;
+      padding:24px;
+      box-shadow:0 18px 48px rgba(0,0,0,.08);
+    }
+    .login-brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:8px;
+    }
+    .login-brand-mark{
+      width:46px;height:46px;
+      border-radius:15px;
+      display:grid;place-items:center;
+      background:var(--accent-soft);
+      font-size:24px;
+    }
+    .profile-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin:18px 0;
+    }
+    .profile-btn{
+      border:1px solid var(--border);
+      background:var(--panel);
+      color:var(--text);
+      border-radius:18px;
+      padding:16px 12px;
+      min-height:108px;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font:inherit;
+    }
+    .profile-btn.active{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px var(--accent-soft);
+    }
+    .profile-avatar{
+      width:44px;height:44px;
+      border-radius:50%;
+      display:grid;place-items:center;
+      background:var(--accent-soft);
+      font-weight:800;
+    }
+    .login-pin-wrap{margin-top:14px}
+    .login-pin-wrap input{
+      width:100%;
+      text-align:center;
+      letter-spacing:.4em;
+      font-size:24px;
+      padding:13px 14px;
+    }
+    .login-error{
+      min-height:20px;
+      margin-top:8px;
+      color:#b14e4e;
+      font-size:13px;
+      text-align:center;
+    }
+    .user-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:7px 10px;
+      background:var(--panel);
+      font-size:13px;
+    }
+    .user-chip .mini-avatar{
+      width:24px;height:24px;
+      border-radius:50%;
+      display:grid;place-items:center;
+      background:var(--accent-soft);
+      font-size:11px;font-weight:800;
+    }
+    .logout-btn{margin-left:4px}
+    @media(max-width:520px){
+      .profile-grid{grid-template-columns:1fr}
+      .login-card{padding:20px}
+    }
+
+
+    .settings-section{margin-bottom:24px}
+    .family-settings-list{display:grid;gap:12px}
+    .family-settings-row{
+      display:grid;
+      grid-template-columns:auto minmax(120px,1fr) minmax(110px,.7fr) auto;
+      gap:12px;
+      align-items:center;
+      padding:12px 0;
+      border-bottom:1px solid var(--border);
+    }
+    .family-settings-row:last-child{border-bottom:0}
+    .family-settings-row input,
+    .family-settings-row select{
+      width:100%;
+      min-width:0;
+    }
+    .family-settings-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+    .family-settings-avatar{
+      width:42px;height:42px;border-radius:50%;
+      display:grid;place-items:center;
+      background:var(--accent-soft);
+      font-weight:800;
+    }
+    .member-meta-label{display:none}
+    @media(max-width:680px){
+      .family-settings-row{
+        grid-template-columns:auto 1fr;
+        align-items:start;
+      }
+      .family-settings-row .member-field,
+      .family-settings-actions{
+        grid-column:2;
+      }
+      .family-settings-actions{justify-content:flex-start}
+      .member-meta-label{
+        display:block;
+        font-size:11px;
+        color:var(--muted);
+        margin-bottom:3px;
+      }
+    }
+
+    .mobile-nav{
+      display:none;
+      gap:8px;
+      overflow-x:auto;
+      padding-bottom:10px;
+      margin-bottom:16px;
+    }
+    .mobile-nav button{
+      white-space:nowrap;
+      border:1px solid var(--border);
+      background:var(--panel);
+      border-radius:999px;
+      padding:10px 12px;
+      min-height:42px;
+    }
+    .mobile-nav button.active{background:var(--accent-2);color:#315d52}
+
+    @media (max-width:980px){
+      .mobile-nav{display:flex}
+      .page-grid,.family-grid{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:560px){
+      .page-grid,.field-row,.family-grid{grid-template-columns:1fr}
+    }
+
+    .modal{
+      border:0;
+      border-radius:22px;
+      padding:0;
+      width:min(520px,calc(100% - 28px));
+      box-shadow:0 30px 80px rgba(0,0,0,.2);
+    }
+    .modal::backdrop{background:rgba(30,40,45,.32)}
+    .modal-inner{padding:22px}
+    .modal h3{margin:0 0 16px}
+    .form{display:grid;gap:12px}
+    label{display:grid;gap:6px;font-size:13px;color:var(--muted)}
+    input,select{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px;
+      min-height:44px;
+      background:white;
+      color:var(--text);
+    }
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+
+    .toast{
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      background:#263238;
+      color:#fff;
+      padding:12px 16px;
+      border-radius:12px;
+      opacity:0;
+      transform:translateY(8px);
+      transition:.2s ease;
+      pointer-events:none;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    @media (max-width:980px){
+      .app{grid-template-columns:1fr}
+      aside{display:none}
+      main{padding:18px}
+      .grid{grid-template-columns:1fr}
+      .quick-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:560px){
+      .topbar{flex-direction:column}
+      .actions{width:100%}
+      .actions .btn{flex:1}
+      .next-grid{grid-template-columns:1fr}
+      .leave-box{min-width:0}
+      .quick-grid{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+  <section class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="login-brand-mark">🏡</div>
+        <div>
+          <h1 style="margin:0">Warren Family</h1>
+          <div class="small">Choose your profile and enter your 4-digit PIN.</div>
+        </div>
+      </div>
+
+      <div class="profile-grid" role="group" aria-label="Family profiles">
+        <button class="profile-btn" type="button" data-login-profile="Ryan">
+          <div class="profile-avatar">R</div>
+          <strong>Ryan</strong>
+          <span class="small">Family member</span>
+        </button>
+        <button class="profile-btn" type="button" data-login-profile="Rebekah">
+          <div class="profile-avatar">R</div>
+          <strong>Rebekah</strong>
+          <span class="small">Family member</span>
+        </button>
+      </div>
+
+      <div class="login-pin-wrap">
+        <label for="familyLoginPin" class="small"><strong>PIN</strong></label>
+        <input id="familyLoginPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" aria-label="4-digit family PIN" disabled>
+        <button class="btn primary" id="familyLoginBtn" type="button" style="width:100%;margin-top:10px" disabled>Enter Dashboard</button>
+        <div class="login-error" id="familyLoginError" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+  <div id="appShell" hidden>
+
+
+  <div class="app" id="app">
+    <aside>
+      <div class="brand">
+        <div class="brand-mark">🏡</div>
+        <div><strong>Warren Family</strong><span>Plan • Do • Thrive</span></div>
+      </div>
+
+      <nav aria-label="Primary" id="sideNav">
+        <button class="active" type="button" data-page="home">🏠 Home</button>
+        <button type="button" data-page="calendar">📅 Calendar</button>
+        <button type="button" data-page="bills">💵 Bills</button>
+        <button type="button" data-page="budget">📊 Budget</button>
+        <button type="button" data-page="tasks">✅ Tasks</button>
+        <button type="button" data-page="settings">⚙️ Settings</button>
+      </nav>
+
+      <div class="aside-note">
+        <strong>Small steps. Big progress.</strong>
+        <div style="margin-top:8px">Keep the home screen focused on what matters now.</div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="mobile-nav" id="mobileNav">
+        <button class="active" type="button" data-page="home">Home</button>
+        <button type="button" data-page="calendar">Calendar</button>
+        <button type="button" data-page="bills">Bills</button>
+        <button type="button" data-page="budget">Budget</button>
+        <button type="button" data-page="tasks">Tasks</button>
+        <button type="button" data-page="settings">Settings</button>
+      </div>
+
+      <section class="page active" id="page-home">
+      <div class="topbar">
+        <div>
+          <h1>Good morning, Warren Family 👋</h1>
+          <div class="subtitle" id="todayLabel">Monday, September 14</div>
+        </div>
+        <div class="actions">
+          <button class="btn ghost" id="darkBtn" type="button">🌙 Dark Mode</button>
+          <button class="btn ghost" id="stimBtn" type="button">🌿 Low Stimulation</button>
+          
+          <span class="user-chip" id="currentUserChip" hidden>
+            <span class="mini-avatar" id="currentUserInitial">R</span>
+            <span id="currentUserName">Family</span>
+            <button class="btn logout-btn" id="logoutBtn" type="button">Log out</button>
+          </span>
+<button class="btn primary" id="quickAddBtn" type="button">＋ Quick Add</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="stack">
+          <section class="card next-up">
+            <div class="section-head">
+              <h2>Next Up</h2>
+              <span class="pill">In 3h 20m</span>
+            </div>
+            <div class="next-grid">
+              <div>
+                <div class="next-title">🦷 Dentist Appointment</div>
+                <div class="event-meta">Today at 2:30 PM • Rebekah + Emma</div>
+                <div class="event-meta">Bright Smiles Dental</div>
+              </div>
+              <div class="leave-box">
+                <span class="small">Leave by</span>
+                <strong>1:55 PM</strong>
+                <span class="small">35 min drive</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="section-head">
+              <h2>Today</h2>
+              <span class="pill warm">Keep it simple</span>
+            </div>
+            <div class="timeline" id="timeline">
+              <div class="timeline-row"><div class="time">8:00 AM</div><div class="dot"></div><div><div class="event-title">School Drop-off</div><div class="event-meta">Jack • Riverside Elementary</div></div></div>
+              <div class="timeline-row"><div class="time">10:00 AM</div><div class="dot blue"></div><div><div class="event-title">Team Meeting</div><div class="event-meta">Ryan • Work</div></div></div>
+              <div class="timeline-row"><div class="time">2:30 PM</div><div class="dot blue"></div><div><div class="event-title">Dentist Appointment</div><div class="event-meta">Rebekah + Emma</div></div></div>
+              <div class="timeline-row"><div class="time">4:00 PM</div><div class="dot rose"></div><div><div class="event-title">Homework / Quiet Time</div><div class="event-meta">Kids • 45 minutes</div></div></div>
+              <div class="timeline-row"><div class="time">6:30 PM</div><div class="dot gold"></div><div><div class="event-title">Family Dinner</div><div class="event-meta">Everyone • Home</div></div></div>
+            </div>
+          </section>
+
+          <section class="card optional">
+            <h2>Quick Add</h2>
+            <div class="quick-grid">
+              <button class="quick" type="button" data-type="Event">📅<strong>Add Event</strong></button>
+              <button class="quick" type="button" data-type="Bill">💵<strong>Add Bill</strong></button>
+              <button class="quick" type="button" data-type="Task">✅<strong>Add Task</strong></button>
+              <button class="quick" type="button" data-type="Quiet Time">🧘<strong>Add Quiet Time</strong></button>
+            </div>
+          </section>
+
+          <section class="card optional">
+            <div class="section-head">
+              <h2>This Week</h2>
+              <span class="pill">Family overview</span>
+            </div>
+            <div class="week">
+              <div class="day"><strong>Mon 14</strong><div class="mini-event">2:30 Dentist</div><div class="mini-event">4:00 Homework</div></div>
+              <div class="day"><strong>Tue 15</strong><div class="mini-event">5:00 Soccer</div></div>
+              <div class="day"><strong>Wed 16</strong><div class="mini-event">Electric bill due</div></div>
+              <div class="day"><strong>Thu 17</strong><div class="mini-event">9:00 School event</div></div>
+              <div class="day"><strong>Fri 18</strong><div class="mini-event">6:30 Date night ❤️</div></div>
+              <div class="day"><strong>Sat 19</strong><div class="mini-event">10:00 Family hike</div></div>
+              <div class="day"><strong>Sun 20</strong><div class="mini-event">4:00 Meal prep</div></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="stack">
+          <section class="card">
+            <div class="section-head">
+              <h2>🎯 Top 3 Today</h2>
+              <span class="pill alert" id="taskCount">3 left</span>
+            </div>
+            <div class="task-list" id="taskList">
+              <label class="task"><span class="task-left"><input type="checkbox"><span class="task-copy"><strong>Pay electric bill</strong><span class="small">Due in 2 days</span></span></span><span class="pill alert">High</span></label>
+              <label class="task"><span class="task-left"><input type="checkbox"><span class="task-copy"><strong>Sign school form</strong><span class="small">Emma</span></span></span><span class="pill warm">Medium</span></label>
+              <label class="task"><span class="task-left"><input type="checkbox"><span class="task-copy"><strong>Call pharmacy</strong><span class="small">Pickup refill</span></span></span><span class="pill warm">Medium</span></label>
+            </div>
+          </section>
+
+          <section class="card optional">
+            <div class="section-head"><h2>💵 Bills</h2><span class="pill">3 upcoming</span></div>
+            <div class="bill-list" id="billList">
+              <div class="bill"><div><strong>Electric</strong><div class="small">$142 • Sep 16</div></div><span class="pill alert">2 days</span></div>
+              <div class="bill"><div><strong>Internet</strong><div class="small">$85 • Sep 22</div></div><span class="pill">8 days</span></div>
+              <div class="bill"><div><strong>Water</strong><div class="small">$62 • Sep 28</div></div><span class="pill">14 days</span></div>
+            </div>
+          </section>
+
+          <section class="card optional">
+            <div class="section-head"><h2>🔔 Reminders</h2><span class="pill">SMS plan</span></div>
+            <div class="reminder-list">
+              <div class="reminder"><div><strong>Electric bill</strong><div class="small">1 day before</div></div><span class="small">Sep 15</span></div>
+              <div class="reminder"><div><strong>Dentist appointment</strong><div class="small">7 days before</div></div><span class="small">Sep 17</span></div>
+              <div class="reminder"><div><strong>Dentist appointment</strong><div class="small">1 day before</div></div><span class="small">Sep 23</span></div>
+            </div>
+          </section>
+        </div>
+      </div>
+      </section>
+
+      <section class="page" id="page-calendar">
+        <h1 class="page-title">Family Calendar</h1>
+        <div class="calendar-source-bar" aria-label="Visible calendar sources">
+          <label class="source-chip"><input type="checkbox" class="calendarSourceToggle" data-source="family" checked> <span class="source-dot family"></span>Warren Family</label>
+          <label class="source-chip"><input type="checkbox" class="calendarSourceToggle" data-source="ryan" checked> <span class="source-dot ryan"></span>Ryan</label>
+          <label class="source-chip"><input type="checkbox" class="calendarSourceToggle" data-source="rebekah" checked> <span class="source-dot rebekah"></span>Rebekah</label>
+          <label class="source-chip"><input type="checkbox" class="calendarSourceToggle" data-source="kids" checked> <span class="source-dot kids"></span>Kids</label>
+          <label class="source-chip"><input type="checkbox" class="calendarSourceToggle" data-source="school" checked> <span class="source-dot school"></span>School</label>
+        </div>
+
+        <div class="page-grid">
+          <div class="card">
+            <div class="section-head"><h2>Upcoming</h2><button class="btn primary page-add" data-type="Event" type="button">+ Add Event</button></div>
+            <div class="timeline">
+              <div class="timeline-row"><div class="time">Mon</div><div class="dot blue"></div><div><div class="event-title">Dentist Appointment</div><div class="event-meta">2:30 PM • Rebekah + Emma • Warren Family</div></div></div>
+              <div class="timeline-row"><div class="time">Tue</div><div class="dot"></div><div><div class="event-title">Soccer Practice</div><div class="event-meta">5:00 PM • Jack • Kids</div></div></div>
+              <div class="timeline-row"><div class="time">Thu</div><div class="dot rose"></div><div><div class="event-title">School Event</div><div class="event-meta">9:00 AM • Family • School</div></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Protected Time</h2>
+            <div class="bill-list">
+              <div class="bill"><div><strong>Homework / Quiet Time</strong><div class="small">Weekdays • 4:00–4:45 PM</div></div><span class="pill">Kids</span></div>
+              <div class="bill"><div><strong>Family Dinner</strong><div class="small">Mon–Thu • 6:30 PM</div></div><span class="pill">Everyone</span></div>
+              <div class="bill"><div><strong>Date Night</strong><div class="small">Friday • 6:30 PM</div></div><span class="pill warm">Parents</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sync-layout">
+          <div class="card">
+            <div class="section-head"><div><h2>Apple Calendar Sources</h2><div class="small">Multiple family members and calendars are supported by design.</div></div><span class="sync-badge pending">Integration pending</span></div>
+            <div class="connection-row"><div class="connection-main"><div class="calendar-icon"></div><div><strong>Ryan — iCloud</strong><div class="small">Family, Personal, Work</div></div></div><button class="btn" type="button" data-calendar-connect="Ryan">Connect</button></div>
+            <div class="connection-row"><div class="connection-main"><div class="calendar-icon"></div><div><strong>Rebekah — iCloud</strong><div class="small">Family, Personal</div></div></div><button class="btn" type="button" data-calendar-connect="Rebekah">Connect</button></div>
+            <div class="connection-row"><div class="connection-main"><div class="calendar-icon"></div><div><strong>Kids / School</strong><div class="small">Shared calendars and school events</div></div></div><button class="btn" type="button" data-calendar-connect="Kids">Connect</button></div>
+          </div>
+          <div class="card">
+            <h2>Two-Way Sync Design</h2>
+            <div class="sync-note">Events retain their Apple calendar source and external event ID. Dashboard edits are designed to sync back to the same calendar, while Apple-side changes update the dashboard copy.</div>
+            <div class="small" style="margin-top:10px"><strong>Conflict rule:</strong> newest confirmed change wins, with deletion protection and a sync log.</div>
+            <div class="small" style="margin-top:8px"><strong>Privacy:</strong> calendars can be hidden, read-only, or editable.</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="section-head"><div><h2>Calendar Permissions</h2><div class="small">Ready for secure Apple authorization later.</div></div></div>
+          <div class="budget-table-wrap"><table class="calendar-manager">
+            <thead><tr><th>Calendar</th><th>Owner</th><th>Dashboard access</th><th>Visible</th></tr></thead>
+            <tbody>
+              <tr><td><span class="source-dot family"></span> Warren Family</td><td>Family</td><td><select><option>Read & Write</option><option>Read Only</option><option>Hidden</option></select></td><td><input type="checkbox" checked></td></tr>
+              <tr><td><span class="source-dot ryan"></span> Ryan Personal</td><td>Ryan</td><td><select><option>Read & Write</option><option>Read Only</option><option>Hidden</option></select></td><td><input type="checkbox" checked></td></tr>
+              <tr><td><span class="source-dot rebekah"></span> Rebekah Personal</td><td>Rebekah</td><td><select><option>Read & Write</option><option>Read Only</option><option>Hidden</option></select></td><td><input type="checkbox" checked></td></tr>
+              <tr><td><span class="source-dot kids"></span> Kids</td><td>Family</td><td><select><option>Read & Write</option><option>Read Only</option><option>Hidden</option></select></td><td><input type="checkbox" checked></td></tr>
+              <tr><td><span class="source-dot school"></span> School</td><td>Shared</td><td><select><option>Read Only</option><option>Read & Write</option><option>Hidden</option></select></td><td><input type="checkbox" checked></td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="card calendar-shell">
+          <div class="calendar-toolbar">
+            <div><div class="small">Monthly view</div><div class="calendar-title" id="calendarMonthTitle">September 2026</div></div>
+            <div class="calendar-controls"><button class="btn" id="prevMonthBtn" type="button">← Previous</button><button class="btn" id="todayMonthBtn" type="button">Today</button><button class="btn" id="nextMonthBtn" type="button">Next →</button></div>
+          </div>
+          <div class="month-grid" id="monthGrid" aria-label="Monthly family calendar"></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-bills">
+        <h1 class="page-title">Bills</h1>
+        <div class="page-grid">
+          <div class="card">
+            <div class="section-head"><h2>Upcoming Bills</h2><button class="btn primary page-add" data-type="Bill" type="button">+ Add Bill</button></div>
+            <div class="bill-list" id="fullBillList">
+              <div class="bill"><div><strong>Electric</strong><div class="small">$142 • Sep 16 • Manual pay</div></div><span class="pill alert">Due soon</span></div>
+              <div class="bill"><div><strong>Internet</strong><div class="small">$85 • Sep 22 • Autopay</div></div><span class="pill">8 days</span></div>
+              <div class="bill"><div><strong>Water</strong><div class="small">$62 • Sep 28 • Manual pay</div></div><span class="pill">14 days</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Bill Reminder Rules</h2>
+            <div class="settings-list">
+              <div class="setting-row"><div><strong>1 week before</strong><div class="small">Send an SMS reminder</div></div><input type="checkbox" checked aria-label="1 week reminder"></div>
+              <div class="setting-row"><div><strong>1 day before</strong><div class="small">Send an SMS reminder</div></div><input type="checkbox" checked aria-label="1 day reminder"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="page" id="page-budget">
+        <h1 class="page-title">Budget</h1>
+        <div class="card pin-gate" id="budgetPinGate">
+          <h2>Private Budget</h2>
+          <p class="small">Enter the family budget PIN to open this screen.</p>
+          <input id="budgetPinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••" aria-label="Budget PIN">
+          <button class="btn primary" id="budgetUnlockBtn" type="button">Unlock Budget</button>
+          <div class="budget-locked-note">Budget requires the separate 4-digit family budget PIN.</div>
+        </div>
+        <div id="budgetApp" hidden>
+          <div class="budget-toolbar">
+            <div><div class="small">Monthly budget</div><h2 id="budgetMonthTitle" style="margin:4px 0 0">September 2026</h2></div>
+            <div class="budget-month-controls">
+              <button class="btn" id="budgetPrevMonth" type="button">← Previous</button>
+              <button class="btn" id="budgetCurrentMonth" type="button">Current Month</button>
+              <button class="btn" id="budgetNextMonth" type="button">Next →</button>
+              <button class="btn ghost" id="budgetLockBtn" type="button">🔒 Lock</button>
+            </div>
+          </div>
+          <div class="budget-summary">
+            <div class="budget-stat"><div class="label">Planned</div><div class="value" id="budgetPlanned">$0</div></div>
+            <div class="budget-stat"><div class="label">Current Balance</div><div class="value" id="budgetCurrent">$0</div></div>
+            <div class="budget-stat"><div class="label">Prior Month Spent</div><div class="value" id="budgetPrior">$0</div></div>
+            <div class="budget-stat"><div class="label">Carry Over</div><div class="value" id="budgetCarry">$0</div></div>
+          </div>
+          <div class="card">
+            <div class="section-head">
+              <div><h2>Budget Items</h2><div class="small">Each new month starts from the prior month and keeps its history.</div></div>
+              <button class="btn primary" id="addBudgetRowBtn" type="button">+ Add Item</button>
+            </div>
+            <div class="budget-table-wrap">
+              <table class="budget-table">
+                <thead><tr><th>Item</th><th class="money">Amount</th><th class="money">Current Balance</th><th class="money">Month Prior Spent</th><th class="money">Monthly Carry Over</th><th class="money">Spent This Month</th><th></th></tr></thead>
+                <tbody id="budgetRows"></tbody>
+                <tfoot><tr class="budget-total-row"><td>Total</td><td class="money" id="sumAmount">$0</td><td class="money" id="sumCurrentBalance">$0</td><td class="money" id="sumPriorSpent">$0</td><td class="money" id="sumCarry">$0</td><td class="money" id="sumSpent">$0</td><td></td></tr></tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="card" style="margin-top:18px"><h2>Previous Months</h2><div class="budget-history" id="budgetHistory"></div></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-tasks">
+        <h1 class="page-title">Tasks</h1>
+        <div class="page-grid">
+          <div class="card">
+            <div class="section-head"><h2>Family Tasks</h2><button class="btn primary page-add" data-type="Task" type="button">+ Add Task</button></div>
+            <div class="task-list" id="fullTaskList">
+              <label class="task"><span class="task-left"><input type="checkbox"><span class="task-copy"><strong>Pay electric bill</strong><span class="small">Ryan • Due Sep 16</span></span></span><span class="pill alert">High</span></label>
+              <label class="task"><span class="task-left"><input type="checkbox"><span class="task-copy"><strong>Sign school form</strong><span class="small">Rebekah • Today</span></span></span><span class="pill warm">Medium</span></label>
+              <label class="task"><span class="task-left"><input type="checkbox"><span class="task-copy"><strong>Pack soccer bag</strong><span class="small">Jack • Tomorrow</span></span></span><span class="pill">Low</span></label>
+            </div>
+          </div>
+          <div class="card">
+            <h2>ADHD-Friendly Task View</h2>
+            <p class="small">Keep the most important items visible and move the rest out of the way.</p>
+            <button class="btn" id="focusTasksBtn" type="button">Show only priority tasks</button>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="page" id="page-settings">
+        <h1 class="page-title">Settings</h1>
+
+        <div class="settings-section">
+          <div class="section-head">
+            <div>
+              <h2 style="margin-bottom:4px">Family Members</h2>
+              <div class="small">Manage the people who appear throughout the Warren Family dashboard.</div>
+            </div>
+            <button class="btn primary" id="addFamilyMemberBtn" type="button">+ Add Member</button>
+          </div>
+
+          <div class="card">
+            <div id="familySettingsList" class="family-settings-list"></div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="section-head">
+            <div>
+              <h2 style="margin-bottom:4px">Reminder Settings</h2>
+              <div class="small">Choose when bill and appointment reminders should be sent.</div>
+            </div>
+            <span class="pill">SMS</span>
+          </div>
+
+          <div class="page-grid">
+            <div class="card">
+              <h2>Default Timing</h2>
+              <div class="field-row">
+                <label>First reminder
+                  <select id="firstReminderTiming">
+                    <option value="7">1 week before</option>
+                    <option value="3">3 days before</option>
+                    <option value="1">1 day before</option>
+                  </select>
+                </label>
+                <label>Second reminder
+                  <select id="secondReminderTiming">
+                    <option value="1">1 day before</option>
+                    <option value="0">Same day</option>
+                  </select>
+                </label>
+              </div>
+              <div class="setting-row" style="margin-top:14px">
+                <div><strong>SMS reminders</strong><div class="small">Send reminders to family members by text message</div></div>
+                <input id="smsRemindersEnabled" type="checkbox" checked>
+              </div>
+              <button class="btn" id="saveReminderSettingsBtn" type="button" style="margin-top:14px">Save Reminder Settings</button>
+            </div>
+
+            <div class="card">
+              <h2>Upcoming Reminder Preview</h2>
+              <div class="reminder-list">
+                <div class="reminder"><div><strong>Electric bill</strong><div class="small">1 day before</div></div><span class="small">Sep 15</span></div>
+                <div class="reminder"><div><strong>Dentist appointment</strong><div class="small">1 week before</div></div><span class="small">Sep 17</span></div>
+                <div class="reminder"><div><strong>Dentist appointment</strong><div class="small">1 day before</div></div><span class="small">Sep 23</span></div>
+              </div>
+              <div class="small" style="margin-top:12px">SMS delivery will become active when the server-side reminder service is connected.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h2>Dashboard Preferences</h2>
+          <div class="card">
+            <div class="settings-list">
+              <div class="setting-row"><div><strong>Low stimulation mode</strong><div class="small">Hide nonessential cards</div></div><input id="settingsStim" type="checkbox"></div>
+              <div class="setting-row"><div><strong>Dark mode</strong><div class="small">Use a darker, lower-glare color theme</div></div><input id="darkModeToggle" type="checkbox" aria-label="Dark mode"></div>
+              <div class="setting-row"><div><strong>Show bill amounts</strong><div class="small">Display balances on dashboard</div></div><input type="checkbox" checked></div>
+              <div class="setting-row"><div><strong>Show family mood</strong><div class="small">Optional daily check-in</div></div><input type="checkbox"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h2>Integrations</h2>
+          <div class="card">
+            <div class="bill-list">
+              <div class="bill"><div><strong>Apple Calendar</strong><div class="small">Multiple family calendars • connection setup pending</div></div><span class="pill">Setup</span></div>
+              <div class="bill"><div><strong>SMS Provider</strong><div class="small">Server-side text message delivery</div></div><span class="pill">Future</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="modal" id="addDialog">
+    <div class="modal-inner">
+      <h3 id="dialogTitle">Quick Add</h3>
+      <form id="addForm" class="form">
+        <label>Type
+          <select id="itemType">
+            <option>Event</option>
+            <option>Bill</option>
+            <option>Task</option>
+            <option>Quiet Time</option>
+          </select>
+        </label>
+        <label>Title
+          <input id="itemTitle" required placeholder="What needs to happen?" />
+        </label>
+        <label>Date
+          <input id="itemDate" type="date" required />
+        </label>
+        <label>Time
+          <input id="itemTime" type="time" />
+        </label>
+        <div class="modal-actions">
+          <button class="btn" id="cancelBtn" type="button">Cancel</button>
+          <button class="btn primary" type="submit">Add</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const app = document.getElementById('app');
+    const stimBtn = document.getElementById('stimBtn');
+    const quickAddBtn = document.getElementById('quickAddBtn');
+    const addDialog = document.getElementById('addDialog');
+    const addForm = document.getElementById('addForm');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const itemType = document.getElementById('itemType');
+    const itemTitle = document.getElementById('itemTitle');
+    const itemDate = document.getElementById('itemDate');
+    const itemTime = document.getElementById('itemTime');
+    const toast = document.getElementById('toast');
+    const taskList = document.getElementById('taskList');
+    const taskCount = document.getElementById('taskCount');
+
+    const now = new Date();
+    document.getElementById('todayLabel').textContent =
+      now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+    const isoToday = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,10);
+    itemDate.value = isoToday;
+
+    function showToast(message){
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(()=>toast.classList.remove('show'),2200);
+    }
+
+    stimBtn.addEventListener('click',()=>{
+      app.classList.toggle('low-stim');
+      const on = app.classList.contains('low-stim');
+      stimBtn.textContent = on ? '🌿 Show Full Dashboard' : '🌿 Low Stimulation';
+      showToast(on ? 'Low stimulation mode on' : 'Full dashboard restored');
+    });
+
+    function openDialog(type='Event'){
+      itemType.value = type;
+      document.getElementById('dialogTitle').textContent = 'Add ' + type;
+      addDialog.showModal();
+      setTimeout(()=>itemTitle.focus(),50);
+    }
+
+    quickAddBtn.addEventListener('click',()=>openDialog('Event'));
+    document.querySelectorAll('.quick').forEach(btn=>{
+      btn.addEventListener('click',()=>openDialog(btn.dataset.type));
+    });
+    cancelBtn.addEventListener('click',()=>addDialog.close());
+
+    addForm.addEventListener('submit',(e)=>{
+      e.preventDefault();
+      const type = itemType.value;
+      const title = itemTitle.value.trim();
+      if(!title) return;
+
+      if(type === 'Task'){
+        const label = document.createElement('label');
+        label.className = 'task';
+        label.innerHTML = '<span class="task-left"><input type="checkbox"><span class="task-copy"><strong></strong><span class="small"></span></span></span><span class="pill">New</span>';
+        label.querySelector('strong').textContent = title;
+        label.querySelector('.small').textContent = 'Due ' + itemDate.value;
+        taskList.appendChild(label);
+        bindTaskCheckbox(label.querySelector('input'));
+        updateTaskCount();
+      } else {
+        const row = document.createElement('div');
+        row.className = 'timeline-row';
+        const t = itemTime.value || '--:--';
+        row.innerHTML = '<div class="time"></div><div class="dot"></div><div><div class="event-title"></div><div class="event-meta"></div></div>';
+        row.querySelector('.time').textContent = t;
+        row.querySelector('.event-title').textContent = title;
+        row.querySelector('.event-meta').textContent = type + ' • ' + itemDate.value;
+        document.getElementById('timeline').appendChild(row);
+      }
+
+      addDialog.close();
+      addForm.reset();
+      itemDate.value = isoToday;
+      itemType.value = 'Event';
+      showToast(type + ' added');
+    });
+
+    function bindTaskCheckbox(cb){
+      cb.addEventListener('change',()=>{
+        cb.closest('.task').classList.toggle('done',cb.checked);
+        updateTaskCount();
+      });
+    }
+    document.querySelectorAll('#taskList input[type="checkbox"]').forEach(bindTaskCheckbox);
+
+    function updateTaskCount(){
+      const boxes = [...document.querySelectorAll('#taskList input[type="checkbox"]')];
+      const left = boxes.filter(b=>!b.checked).length;
+      taskCount.textContent = left + (left === 1 ? ' left' : ' left');
+    }
+  
+
+    const darkBtn = document.getElementById('darkBtn');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    function setDarkMode(on){
+      document.body.classList.toggle('dark-mode', on);
+      if(darkModeToggle) darkModeToggle.checked = on;
+      if(darkBtn) darkBtn.textContent = on ? '☀️ Light Mode' : '🌙 Dark Mode';
+      try { localStorage.setItem('warrenDarkMode', on ? '1' : '0'); } catch(e) {}
+    }
+
+    let savedDark = false;
+    try { savedDark = localStorage.getItem('warrenDarkMode') === '1'; } catch(e) {}
+    setDarkMode(savedDark);
+
+    if(darkBtn){
+      darkBtn.addEventListener('click',()=>setDarkMode(!document.body.classList.contains('dark-mode')));
+    }
+    if(darkModeToggle){
+      darkModeToggle.addEventListener('change',()=>setDarkMode(darkModeToggle.checked));
+    }
+
+
+    const monthGrid = document.getElementById('monthGrid');
+    const calendarMonthTitle = document.getElementById('calendarMonthTitle');
+    const prevMonthBtn = document.getElementById('prevMonthBtn');
+    const nextMonthBtn = document.getElementById('nextMonthBtn');
+    const todayMonthBtn = document.getElementById('todayMonthBtn');
+
+    const calendarEvents = [
+      {date:'2026-09-14', title:'Dentist 2:30 PM', type:'event'},
+      {date:'2026-09-14', title:'Homework 4:00 PM', type:'quiet', source:'kids'},
+      {date:'2026-09-15', title:'Soccer 5:00 PM', type:'event'},
+      {date:'2026-09-16', title:'Electric bill due', type:'bill', source:'family'},
+      {date:'2026-09-17', title:'School event 9:00 AM', type:'event'},
+      {date:'2026-09-18', title:'Date night 6:30 PM', type:'event'},
+      {date:'2026-09-19', title:'Family hike 10:00 AM', type:'event'},
+      {date:'2026-09-20', title:'Meal prep 4:00 PM', type:'quiet'}
+    ];
+
+    let calendarCursor = new Date(2026, 8, 1);
+
+    function ymd(y,m,d){
+      return y + '-' + String(m+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    }
+
+    function renderCalendar(){
+      if(!monthGrid) return;
+      const year = calendarCursor.getFullYear();
+      const month = calendarCursor.getMonth();
+      calendarMonthTitle.textContent = calendarCursor.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+      monthGrid.innerHTML = '';
+
+      ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(day=>{
+        const el = document.createElement('div');
+        el.className = 'weekday';
+        el.textContent = day;
+        monthGrid.appendChild(el);
+      });
+
+      const first = new Date(year, month, 1);
+      const start = new Date(year, month, 1 - first.getDay());
+      const today = new Date();
+      const todayKey = ymd(today.getFullYear(), today.getMonth(), today.getDate());
+
+      for(let i=0;i<42;i++){
+        const d = new Date(start);
+        d.setDate(start.getDate()+i);
+        const key = ymd(d.getFullYear(),d.getMonth(),d.getDate());
+        const cell = document.createElement('div');
+        cell.className = 'date-cell';
+        if(d.getMonth() !== month) cell.classList.add('outside');
+        if(key === todayKey) cell.classList.add('today');
+
+        const num = document.createElement('div');
+        num.className = 'date-number';
+        num.textContent = d.getDate();
+        cell.appendChild(num);
+
+        calendarEvents.filter(e=>e.date===key).slice(0,3).forEach(evt=>{
+          const ev = document.createElement('div');
+          ev.className = 'cal-event ' + (evt.type || '');
+          ev.textContent = evt.title;
+          ev.title = evt.title;
+          cell.appendChild(ev);
+        });
+
+        monthGrid.appendChild(cell);
+      }
+    }
+
+    if(prevMonthBtn) prevMonthBtn.addEventListener('click',()=>{
+      calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth()-1, 1);
+      renderCalendar();
+    });
+    if(nextMonthBtn) nextMonthBtn.addEventListener('click',()=>{
+      calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth()+1, 1);
+      renderCalendar();
+    });
+    if(todayMonthBtn) todayMonthBtn.addEventListener('click',()=>{
+      const t = new Date();
+      calendarCursor = new Date(t.getFullYear(), t.getMonth(), 1);
+      renderCalendar();
+    });
+    renderCalendar();
+
+
+    const budgetPinGate = document.getElementById('budgetPinGate');
+    const budgetApp = document.getElementById('budgetApp');
+    const budgetPinInput = document.getElementById('budgetPinInput');
+    const budgetUnlockBtn = document.getElementById('budgetUnlockBtn');
+    const budgetLockBtn = document.getElementById('budgetLockBtn');
+    const budgetRows = document.getElementById('budgetRows');
+    const budgetMonthTitle = document.getElementById('budgetMonthTitle');
+    const budgetHistory = document.getElementById('budgetHistory');
+    const demoBudgetPin = '1204';
+    const seedBudget = {
+      '2026-08': [
+        {item:'Groceries', amount:900, currentBalance:95, priorSpent:0, carryOver:40, spent:845},
+        {item:'Gas / Transportation', amount:350, currentBalance:42, priorSpent:0, carryOver:20, spent:328},
+        {item:'Dining Out', amount:220, currentBalance:15, priorSpent:0, carryOver:0, spent:205},
+        {item:'Kids / School', amount:300, currentBalance:55, priorSpent:0, carryOver:30, spent:275},
+        {item:'Household', amount:250, currentBalance:80, priorSpent:0, carryOver:25, spent:195}
+      ],
+      '2026-09': [
+        {item:'Groceries', amount:900, currentBalance:610, priorSpent:845, carryOver:55, spent:345},
+        {item:'Gas / Transportation', amount:350, currentBalance:250, priorSpent:328, carryOver:42, spent:142},
+        {item:'Dining Out', amount:220, currentBalance:160, priorSpent:205, carryOver:15, spent:75},
+        {item:'Kids / School', amount:300, currentBalance:210, priorSpent:275, carryOver:55, spent:145},
+        {item:'Household', amount:250, currentBalance:205, priorSpent:195, carryOver:80, spent:125}
+      ]
+    };
+    let budgetData; try { budgetData = JSON.parse(localStorage.getItem('warrenBudgetData')) || seedBudget; } catch(e) { budgetData = seedBudget; }
+    let budgetCursor = new Date(2026,8,1);
+    function budgetKey(date){ return date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0'); }
+    function previousMonthKey(key){ const parts=key.split('-').map(Number); return budgetKey(new Date(parts[0],parts[1]-2,1)); }
+    function saveBudget(){ try { localStorage.setItem('warrenBudgetData', JSON.stringify(budgetData)); } catch(e) {} }
+    function clonePriorMonthInto(key){
+      if(budgetData[key]) return;
+      const prev=budgetData[previousMonthKey(key)]||[];
+      budgetData[key]=prev.map(row=>({item:row.item,amount:Number(row.amount)||0,currentBalance:(Number(row.amount)||0)+(Number(row.currentBalance)||0),priorSpent:Number(row.spent)||0,carryOver:Number(row.currentBalance)||0,spent:0}));
+      saveBudget();
+    }
+    function money(n){ return (Number(n)||0).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:2}); }
+    function renderBudget(){
+      if(!budgetRows) return;
+      const key=budgetKey(budgetCursor); clonePriorMonthInto(key); const rows=budgetData[key]||[];
+      budgetMonthTitle.textContent=budgetCursor.toLocaleDateString(undefined,{month:'long',year:'numeric'}); budgetRows.innerHTML='';
+      rows.forEach((row,index)=>{
+        const tr=document.createElement('tr');
+        [['item','text'],['amount','number'],['currentBalance','number'],['priorSpent','number'],['carryOver','number'],['spent','number']].forEach(([field,type],cellIndex)=>{
+          const td=document.createElement('td'); if(cellIndex>0) td.className='money'; const input=document.createElement('input'); input.type=type;
+          if(type==='number'){input.step='0.01';input.min='0';} input.value=row[field];
+          input.addEventListener('change',()=>{row[field]=type==='number'?Math.max(0,Number(input.value)||0):input.value.trim();saveBudget();renderBudget();});
+          td.appendChild(input); tr.appendChild(td);
+        });
+        const action=document.createElement('td'); const remove=document.createElement('button'); remove.type='button'; remove.className='btn'; remove.textContent='Remove';
+        remove.addEventListener('click',()=>{rows.splice(index,1);saveBudget();renderBudget();}); action.appendChild(remove); tr.appendChild(action); budgetRows.appendChild(tr);
+      });
+      const sums=rows.reduce((a,r)=>({amount:a.amount+(Number(r.amount)||0),current:a.current+(Number(r.currentBalance)||0),prior:a.prior+(Number(r.priorSpent)||0),carry:a.carry+(Number(r.carryOver)||0),spent:a.spent+(Number(r.spent)||0)}),{amount:0,current:0,prior:0,carry:0,spent:0});
+      document.getElementById('sumAmount').textContent=money(sums.amount); document.getElementById('sumCurrentBalance').textContent=money(sums.current); document.getElementById('sumPriorSpent').textContent=money(sums.prior); document.getElementById('sumCarry').textContent=money(sums.carry); document.getElementById('sumSpent').textContent=money(sums.spent);
+      document.getElementById('budgetPlanned').textContent=money(sums.amount); document.getElementById('budgetCurrent').textContent=money(sums.current); document.getElementById('budgetPrior').textContent=money(sums.prior); document.getElementById('budgetCarry').textContent=money(sums.carry); renderBudgetHistory(key);
+    }
+    function renderBudgetHistory(activeKey){
+      const keys=Object.keys(budgetData).filter(k=>k!==activeKey).sort().reverse().slice(0,6); budgetHistory.innerHTML='';
+      if(!keys.length){budgetHistory.innerHTML='<div class="small">Previous months will appear here automatically.</div>';return;}
+      keys.forEach(key=>{const parts=key.split('-').map(Number); const label=new Date(parts[0],parts[1]-1,1).toLocaleDateString(undefined,{month:'long',year:'numeric'}); const rows=budgetData[key]||[]; const spent=rows.reduce((s,r)=>s+(Number(r.spent)||0),0); const remaining=rows.reduce((s,r)=>s+(Number(r.currentBalance)||0),0); const card=document.createElement('div'); card.className='history-card'; card.innerHTML='<strong>'+label+'</strong><div class="small" style="margin-top:7px">Spent: '+money(spent)+'</div><div class="small">Ending balance: '+money(remaining)+'</div>'; budgetHistory.appendChild(card);});
+    }
+    function unlockBudget(){ if(budgetPinInput.value===demoBudgetPin){budgetPinGate.hidden=true;budgetApp.hidden=false;budgetPinInput.value='';renderBudget();}else{toast('Incorrect budget PIN');} }
+    if(budgetUnlockBtn) budgetUnlockBtn.addEventListener('click',unlockBudget);
+    if(budgetPinInput) budgetPinInput.addEventListener('keydown',e=>{if(e.key==='Enter') unlockBudget();});
+    if(budgetLockBtn) budgetLockBtn.addEventListener('click',()=>{budgetApp.hidden=true;budgetPinGate.hidden=false;});
+    const addBudgetRowBtn=document.getElementById('addBudgetRowBtn');
+    if(addBudgetRowBtn) addBudgetRowBtn.addEventListener('click',()=>{const key=budgetKey(budgetCursor);clonePriorMonthInto(key);budgetData[key].push({item:'New Item',amount:0,currentBalance:0,priorSpent:0,carryOver:0,spent:0});saveBudget();renderBudget();});
+    const budgetPrevMonth=document.getElementById('budgetPrevMonth'); const budgetNextMonth=document.getElementById('budgetNextMonth'); const budgetCurrentMonth=document.getElementById('budgetCurrentMonth');
+    if(budgetPrevMonth) budgetPrevMonth.addEventListener('click',()=>{budgetCursor=new Date(budgetCursor.getFullYear(),budgetCursor.getMonth()-1,1);renderBudget();});
+    if(budgetNextMonth) budgetNextMonth.addEventListener('click',()=>{budgetCursor=new Date(budgetCursor.getFullYear(),budgetCursor.getMonth()+1,1);renderBudget();});
+    if(budgetCurrentMonth) budgetCurrentMonth.addEventListener('click',()=>{const t=new Date();budgetCursor=new Date(t.getFullYear(),t.getMonth(),1);renderBudget();});
+
+
+    const activeCalendarSources = new Set(['family','ryan','rebekah','kids','school']);
+    document.querySelectorAll('.calendarSourceToggle').forEach(toggle=>{toggle.addEventListener('change',()=>{if(toggle.checked) activeCalendarSources.add(toggle.dataset.source);else activeCalendarSources.delete(toggle.dataset.source);document.querySelectorAll('.cal-event').forEach(el=>{el.style.display=activeCalendarSources.has(el.dataset.source||'family')?'':'none';});});});
+    document.querySelectorAll('[data-calendar-connect]').forEach(btn=>{btn.addEventListener('click',()=>toast(btn.dataset.calendarConnect+' Apple Calendar connection is scaffolded; secure authorization is the next integration step.'));});
+
+
+    const loginProfiles = {
+      Ryan: '0695',
+      Rebekah: '0599'
+    };
+
+    const loginScreen = document.getElementById('loginScreen');
+    const appShell = document.getElementById('appShell');
+    const familyLoginPin = document.getElementById('familyLoginPin');
+    const familyLoginBtn = document.getElementById('familyLoginBtn');
+    const familyLoginError = document.getElementById('familyLoginError');
+    const currentUserChip = document.getElementById('currentUserChip');
+    const currentUserName = document.getElementById('currentUserName');
+    const currentUserInitial = document.getElementById('currentUserInitial');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    let selectedLoginProfile = null;
+    let currentFamilyUser = null;
+
+    function selectLoginProfile(name){
+      selectedLoginProfile = name;
+      document.querySelectorAll('[data-login-profile]').forEach(btn=>{
+        btn.classList.toggle('active', btn.dataset.loginProfile === name);
+      });
+      familyLoginPin.disabled = false;
+      familyLoginBtn.disabled = false;
+      familyLoginPin.value = '';
+      familyLoginError.textContent = '';
+      familyLoginPin.focus();
+    }
+
+    document.querySelectorAll('[data-login-profile]').forEach(btn=>{
+      btn.addEventListener('click',()=>selectLoginProfile(btn.dataset.loginProfile));
+    });
+
+    function enterDashboard(){
+      const pin = familyLoginPin.value.trim();
+      if(!selectedLoginProfile){
+        familyLoginError.textContent = 'Choose a profile first.';
+        return;
+      }
+      if(!/^\d{4}$/.test(pin)){
+        familyLoginError.textContent = 'Enter a 4-digit PIN.';
+        return;
+      }
+      if(loginProfiles[selectedLoginProfile] !== pin){
+        familyLoginError.textContent = 'That PIN does not match this profile.';
+        familyLoginPin.value = '';
+        familyLoginPin.focus();
+        return;
+      }
+
+      currentFamilyUser = selectedLoginProfile;
+      loginScreen.hidden = true;
+      loginScreen.style.display = 'none';
+      appShell.hidden = false;
+      appShell.style.display = '';
+      if(currentUserChip) currentUserChip.hidden = false;
+      if(currentUserName) currentUserName.textContent = currentFamilyUser;
+      if(currentUserInitial) currentUserInitial.textContent = currentFamilyUser.charAt(0).toUpperCase();
+
+      familyLoginPin.value = '';
+      familyLoginError.textContent = '';
+    }
+
+    if(familyLoginBtn) familyLoginBtn.addEventListener('click', enterDashboard);
+    if(familyLoginPin) familyLoginPin.addEventListener('keydown', e=>{
+      if(e.key === 'Enter') enterDashboard();
+    });
+
+    function lockBudget(){
+      if(typeof budgetApp !== 'undefined' && budgetApp) budgetApp.hidden = true;
+      if(typeof budgetPinGate !== 'undefined' && budgetPinGate) budgetPinGate.hidden = false;
+      if(typeof budgetPinInput !== 'undefined' && budgetPinInput) budgetPinInput.value = '';
+    }
+
+    if(logoutBtn) logoutBtn.addEventListener('click',()=>{
+      lockBudget();
+      currentFamilyUser = null;
+      selectedLoginProfile = null;
+      document.querySelectorAll('[data-login-profile]').forEach(btn=>btn.classList.remove('active'));
+      if(currentUserChip) currentUserChip.hidden = true;
+      appShell.hidden = true;
+      appShell.style.display = 'none';
+      loginScreen.hidden = false;
+      loginScreen.style.display = '';
+      familyLoginPin.disabled = true;
+      familyLoginBtn.disabled = true;
+      familyLoginPin.value = '';
+      familyLoginError.textContent = '';
+    });
+
+    // Re-lock Budget whenever the user navigates away from it.
+    document.querySelectorAll('[data-page]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        if(btn.dataset.page !== 'budget') lockBudget();
+      });
+    });
+
+
+    // Family member management (demo/local browser storage).
+    const defaultFamilyMembers = [
+      {id:'ryan', name:'Ryan', role:'Parent', initials:'RW', login:true},
+      {id:'rebekah', name:'Rebekah', role:'Parent', initials:'RB', login:true},
+      {id:'emma', name:'Emma', role:'Child', initials:'E', login:false},
+      {id:'jack', name:'Jack', role:'Child', initials:'J', login:false}
+    ];
+
+    function loadFamilyMembers(){
+      try{
+        const saved = JSON.parse(localStorage.getItem('warrenFamilyMembers') || 'null');
+        return Array.isArray(saved) && saved.length ? saved : defaultFamilyMembers.map(m=>({...m}));
+      }catch(e){
+        return defaultFamilyMembers.map(m=>({...m}));
+      }
+    }
+
+    let familyMembers = loadFamilyMembers();
+
+    function saveFamilyMembers(){
+      localStorage.setItem('warrenFamilyMembers', JSON.stringify(familyMembers));
+    }
+
+    function escapeHtml(str){
+      return String(str ?? '').replace(/[&<>"']/g, c=>({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+      }[c]));
+    }
+
+    function memberInitials(name){
+      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+      if(!parts.length) return '?';
+      return parts.slice(0,2).map(p=>p[0].toUpperCase()).join('');
+    }
+
+    function renderFamilySettings(){
+      const list = document.getElementById('familySettingsList');
+      if(!list) return;
+
+      list.innerHTML = familyMembers.map(member=>`
+        <div class="family-settings-row" data-member-id="${escapeHtml(member.id)}">
+          <div class="family-settings-avatar">${escapeHtml(member.initials || memberInitials(member.name))}</div>
+          <label class="member-field">
+            <span class="member-meta-label">Name</span>
+            <input class="member-name-input" value="${escapeHtml(member.name)}" aria-label="Family member name">
+          </label>
+          <label class="member-field">
+            <span class="member-meta-label">Role</span>
+            <select class="member-role-input" aria-label="Family member role">
+              <option ${member.role==='Parent'?'selected':''}>Parent</option>
+              <option ${member.role==='Child'?'selected':''}>Child</option>
+              <option ${member.role==='Family'?'selected':''}>Family</option>
+            </select>
+          </label>
+          <div class="family-settings-actions">
+            <button class="btn save-member-btn" type="button">Save</button>
+            ${member.login ? '<span class="pill">PIN profile</span>' : '<button class="btn remove-member-btn" type="button">Remove</button>'}
+          </div>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('.save-member-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const row = btn.closest('.family-settings-row');
+          const member = familyMembers.find(m=>m.id===row.dataset.memberId);
+          if(!member) return;
+          const name = row.querySelector('.member-name-input').value.trim();
+          const role = row.querySelector('.member-role-input').value;
+          if(!name){
+            alert('Please enter a name.');
+            return;
+          }
+          member.name = name;
+          member.role = role;
+          member.initials = memberInitials(name);
+          saveFamilyMembers();
+          renderFamilySettings();
+
+          // Update current logged-in display name if this is that person's profile.
+          if(member.login && currentFamilyUser &&
+             member.id === currentFamilyUser.toLowerCase()){
+            if(currentUserName) currentUserName.textContent = member.name;
+          }
+        });
+      });
+
+      list.querySelectorAll('.remove-member-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const row = btn.closest('.family-settings-row');
+          const member = familyMembers.find(m=>m.id===row.dataset.memberId);
+          if(!member) return;
+          if(confirm(`Remove ${member.name} from the family list?`)){
+            familyMembers = familyMembers.filter(m=>m.id!==member.id);
+            saveFamilyMembers();
+            renderFamilySettings();
+          }
+        });
+      });
+    }
+
+    const addFamilyMemberBtn = document.getElementById('addFamilyMemberBtn');
+    if(addFamilyMemberBtn){
+      addFamilyMemberBtn.addEventListener('click', ()=>{
+        const name = prompt('Family member name:');
+        if(!name || !name.trim()) return;
+        const cleanName = name.trim();
+        familyMembers.push({
+          id:'member-' + Date.now(),
+          name:cleanName,
+          role:'Family',
+          initials:memberInitials(cleanName),
+          login:false
+        });
+        saveFamilyMembers();
+        renderFamilySettings();
+      });
+    }
+
+    const reminderSettingsKey = 'warrenReminderSettings';
+    function loadReminderSettings(){
+      try{
+        const saved = JSON.parse(localStorage.getItem(reminderSettingsKey) || '{}');
+        const first = document.getElementById('firstReminderTiming');
+        const second = document.getElementById('secondReminderTiming');
+        const sms = document.getElementById('smsRemindersEnabled');
+        if(first && saved.first != null) first.value = String(saved.first);
+        if(second && saved.second != null) second.value = String(saved.second);
+        if(sms && saved.sms != null) sms.checked = !!saved.sms;
+      }catch(e){}
+    }
+
+    const saveReminderSettingsBtn = document.getElementById('saveReminderSettingsBtn');
+    if(saveReminderSettingsBtn){
+      saveReminderSettingsBtn.addEventListener('click', ()=>{
+        const data = {
+          first: document.getElementById('firstReminderTiming')?.value || '7',
+          second: document.getElementById('secondReminderTiming')?.value || '1',
+          sms: !!document.getElementById('smsRemindersEnabled')?.checked
+        };
+        localStorage.setItem(reminderSettingsKey, JSON.stringify(data));
+        const original = saveReminderSettingsBtn.textContent;
+        saveReminderSettingsBtn.textContent = 'Saved ✓';
+        setTimeout(()=>saveReminderSettingsBtn.textContent = original, 1300);
+      });
+    }
+
+    renderFamilySettings();
+    loadReminderSettings();
+
+    const pageButtons = document.querySelectorAll('[data-page]');
+    const pages = document.querySelectorAll('.page');
+
+    function showPage(name){
+      if(name === 'budget'){
+        if(typeof budgetApp !== 'undefined' && budgetApp) budgetApp.hidden = true;
+        if(typeof budgetPinGate !== 'undefined' && budgetPinGate) budgetPinGate.hidden = false;
+        if(typeof budgetPinInput !== 'undefined' && budgetPinInput) budgetPinInput.value = '';
+      }
+
+      pages.forEach(p=>p.classList.toggle('active', p.id === 'page-' + name));
+      pageButtons.forEach(b=>b.classList.toggle('active', b.dataset.page === name));
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    pageButtons.forEach(btn=>{
+      btn.addEventListener('click',()=>showPage(btn.dataset.page));
+    });
+
+    document.querySelectorAll('.page-add').forEach(btn=>{
+      btn.addEventListener('click',()=>openDialog(btn.dataset.type || 'Event'));
+    });
+
+    document.querySelectorAll('#fullTaskList input[type="checkbox"]').forEach(bindTaskCheckbox);
+
+    const settingsStim = document.getElementById('settingsStim');
+    if(settingsStim){
+      settingsStim.addEventListener('change',()=>{
+        app.classList.toggle('low-stim',settingsStim.checked);
+        stimBtn.textContent = settingsStim.checked ? '🌿 Show Full Dashboard' : '🌿 Low Stimulation';
+      });
+    }
+
+    const focusTasksBtn = document.getElementById('focusTasksBtn');
+    if(focusTasksBtn){
+      let focused = false;
+      focusTasksBtn.addEventListener('click',()=>{
+        focused = !focused;
+        [...document.querySelectorAll('#fullTaskList .task')].forEach((task,i)=>{
+          task.style.display = focused && i > 1 ? 'none' : '';
+        });
+        focusTasksBtn.textContent = focused ? 'Show all tasks' : 'Show only priority tasks';
+      });
+    }
+
+  </script>
+
+  </div>
+</body>
+</html>
